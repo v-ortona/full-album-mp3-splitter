@@ -4,31 +4,32 @@ require_once 'vendor/autoload.php';
 
 use Sunra\PhpSimple\HtmlDomParser;
 
+//Finds album track list from a Google_Service_YouTube_VideoListResponse Object
 class YouTubeTracklist
 {
 
-	public $trackList; //array("songname" => "starttime", ...)
-	
-	private $html;
+	public $trackList;	//array("songname" => "starttime", ...)
+	public $desc;		//video description
+
+	private $response;	//Google_Service_YouTube_VideoListResponse Object
 	
 
-	public function __construct($url)
+	/*
+	
+	*/
+	public function __construct($response)
 	{
-		$this->html = HtmlDomParser::file_get_html($url);
+		//$this->html = HtmlDomParser::file_get_html($url);
+		$this->response = $response;
+		$this->desc = $response['items']['0']['snippet']['description'];
 	}
 
-	//returns the video description in plaintext
+
 	public function getDesc()
 	{
-		$desc = "";
-	
-		foreach($this->html->find('p#eow-description') as $p) {
-			$text = str_replace("<br />", "\n", $p->innertext);
-			$desc = strip_tags($text);
-		}
-	
-		return $desc;
+		return $this->desc;
 	}
+
 	
 	//tries to parse text and returns tracklist array
 	public function parse($text)
